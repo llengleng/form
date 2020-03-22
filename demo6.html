@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>订单demo</title>
+    <link rel="stylesheet" type="text/css" href="./css/demo6.css">
+</head>
+<body>
+    <div class="all" id="app"  @click="allmoney">
+    <div class="title">
+    <h1>订单管理</h1>
+    <div class="search">
+    <div class="title-search">
+        <input type="text" placeholder="输入查询的品牌名称" v-model="name1"></input>
+    </div>
+    <div class="btn-search" @click="search">查询</div>
+    </div>
+    </div>    
+    
+    <div class="jia">
+        <div class="ad" @click="show">添加订单</div>
+    </div>
+
+    <div class="show">
+        <table>
+            <thead>
+                <tr class="hen">
+                    <th>品牌</th>
+                    <th>订单日期</th>
+                    <th>订单价格</th>
+                    <th>购买数量</th>
+                    <th>操作</th></th>
+                </tr>
+            </thead>
+            <tbody v-for="(item,index) in orders">
+                <tr>
+                    <td>{{item.name}}</td>
+                    <td>{{item.time | yyyyMMdd}}</td>
+                    <td>{{item.money}}</td>
+                    <td>
+                        <button @click="jian(index)">-</button>
+                        <a>{{item.num}}</a>
+                        <button @click="jiaa(index)">+</button>
+                    </td>
+                    <td class="shan" @click="delet(index)">删除</td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="zong">订单总额：{{allPrice}}</div>
+    </div>
+    
+
+    <div class="aform" v-show="flag">
+        <div class="imga">
+        <div class="bt">新增订单</div>
+        <div class="imga1" @click="aformCancel"></div>
+        </div>
+            order:[],
+        <p class="itm">品牌:<input type="text" v-model="order.name" placeholder="例如：华为，三星" ></input></p>
+        <p class="itm">价格:<input type="text" v-model="order.money" placeholder="例如：1000"></input></p>
+        <p class="itm">数量:<input type="text" v-model="order.num" placeholder="例如：5"></input></p>
+        <div class="last">
+        <button class="sub" @click="commit">提交</button>
+        <button class="del" @click="inputCancel">重置</button>
+        </div>
+    </div>
+
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script>
+       const app = new Vue({
+        el:'#app',
+        data: {
+            flag:false,
+            allPrice: 0,
+            name1:'',
+            // name:"",
+            // time:"",
+            // money:"",
+            // num:"",
+            search_order:[],
+            order:[],
+            orders: [{
+                name: "三星",
+                time: "2020-3-20",
+                money: 2000,
+                num: 1
+            }, {
+                name: "苹果",
+                time: "2020-3-20",
+                money: 3000,
+                num: 1
+            }]
+        },
+        methods: {
+            show(){
+                this.flag=true;
+            },
+            aformCancel(){
+                this.flag=false;
+            },
+            inputCancel(){
+                this.name="";
+                this.money="";
+                this.num="";
+            },
+            jiaa(index){
+                this.orders[index].num++;
+            },
+            jian(index){
+                if(this.orders[index].num > 0){
+                this.orders[index].num--;
+                }
+            },
+            delet(index){
+                this.orders.splice(index,1);
+            },
+            commit(){
+                this.order.time = new Date();
+                this.orders.push(this.order);
+                this.flag=false;
+                this.order={};
+            },
+            allmoney(){
+                let allPrice = 0;
+                for(let i in this.orders){
+                    let num = this.orders[i].num;
+                    let money = this.orders[i].money;
+                    allPrice += money * num; 
+                }
+                this.allPrice = allPrice;
+            },
+            search(){
+                var p = this.name1;
+                this.search_order = [];
+                for(let i in this.orders){
+                   var a = this.orders[i].name;
+                   if(p === a){
+                       this.search_order.push(this.orders[i]);
+                   }
+                }
+                this.orders = this.search_order;
+            }
+        }
+    })
+    Vue.filter("yyyyMMdd", function (time) {
+            let dt = new Date(time);
+            let y = dt.getFullYear();
+            let m = (dt.getMonth() + 1).toString().padStart(2, '0');
+            let d = dt.getDate().toString().padStart(2, '0');
+            return `${y}-${m}-${d}`;
+        })
+    </script>
+    
+</body>
+</html>
